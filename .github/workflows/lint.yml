@@ -1,0 +1,35 @@
+name: lint
+
+on:
+  push:
+    branches: master,linter
+  pull_request:
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest  
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+    - name: Lint documentation markdown files    
+      run: |
+        gem install mdl
+        mdl README.md
+        
+  tsv:
+    runs-on: ubuntu-latest  
+    
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.13.1' 
+    - name: Lint TSV files    
+      run: |
+        go get github.com/Clever/csvlint/cmd/csvlint
+        csvlint --delimiter='\t' place-names.tsv
+        csvlint --delimiter='\t' personal-names.tsv
+        csvlint --delimiter='\t' business-names.tsv
